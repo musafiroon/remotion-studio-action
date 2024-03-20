@@ -14,14 +14,14 @@ jobs:
       - name: Checkout & setup
         uses: actions/checkout@main
         
-      - uses: actions/setup-node@main
+      - uses: oven-sh/setup-bun
       - run: sudo apt update
       
       - name: install packages
-        run: npm i
+        run: bun i
 
       - name: Bundle studio
-        run: npx remotion bundle
+        run: bunx remotion bundle
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
