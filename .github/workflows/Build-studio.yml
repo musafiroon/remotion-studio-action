@@ -14,7 +14,7 @@ jobs:
       - name: Checkout & setup
         uses: actions/checkout@main
         
-      - uses: oven-sh/setup-bun
+      - uses: oven-sh/setup-bun@v1
       - run: sudo apt update
       
       - name: install packages
