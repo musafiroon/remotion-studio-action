@@ -3083,39 +3083,59 @@ const jsx_runtime_1 = __webpack_require__(85893);
 const react_1 = __webpack_require__(67294);
 const SequenceContext_js_1 = __webpack_require__(73759);
 const timeline_position_state_js_1 = __webpack_require__(47083);
+const use_current_frame_js_1 = __webpack_require__(39727);
 const use_video_config_js_1 = __webpack_require__(73347);
 /**
  * @description This method freezes all of its children to the frame that you specify as a prop
  * @see [Documentation](https://www.remotion.dev/docs/freeze)
  */
-const Freeze = ({ frame, children }) => {
+const Freeze = ({ frame: frameToFreeze, children, active = true, }) => {
+    const frame = (0, use_current_frame_js_1.useCurrentFrame)();
     const videoConfig = (0, use_video_config_js_1.useVideoConfig)();
-    if (typeof frame === 'undefined') {
+    if (typeof frameToFreeze === 'undefined') {
         throw new Error(`The <Freeze /> component requires a 'frame' prop, but none was passed.`);
     }
-    if (typeof frame !== 'number') {
-        throw new Error(`The 'frame' prop of <Freeze /> must be a number, but is of type ${typeof frame}`);
+    if (typeof frameToFreeze !== 'number') {
+        throw new Error(`The 'frame' prop of <Freeze /> must be a number, but is of type ${typeof frameToFreeze}`);
     }
-    if (Number.isNaN(frame)) {
+    if (Number.isNaN(frameToFreeze)) {
         throw new Error(`The 'frame' prop of <Freeze /> must be a real number, but it is NaN.`);
     }
-    if (!Number.isFinite(frame)) {
-        throw new Error(`The 'frame' prop of <Freeze /> must be a finite number, but it is ${frame}.`);
+    if (!Number.isFinite(frameToFreeze)) {
+        throw new Error(`The 'frame' prop of <Freeze /> must be a finite number, but it is ${frameToFreeze}.`);
     }
-    const context = (0, react_1.useContext)(timeline_position_state_js_1.TimelineContext);
-    const value = (0, react_1.useMemo)(() => {
+    const isActive = (0, react_1.useMemo)(() => {
+        if (typeof active === 'boolean') {
+            return active;
+        }
+        if (typeof active === 'function') {
+            return active(frame);
+        }
+    }, [active, frame]);
+    const timelineContext = (0, react_1.useContext)(timeline_position_state_js_1.TimelineContext);
+    const sequenceContext = (0, react_1.useContext)(SequenceContext_js_1.SequenceContext);
+    const timelineValue = (0, react_1.useMemo)(() => {
+        if (!isActive) {
+            return timelineContext;
+        }
         return {
-            ...context,
+            ...timelineContext,
             playing: false,
             imperativePlaying: {
                 current: false,
             },
             frame: {
-                [videoConfig.id]: frame,
+                [videoConfig.id]: frameToFreeze,
             },
         };
-    }, [context, frame, videoConfig.id]);
-    return ((0, jsx_runtime_1.jsx)(timeline_position_state_js_1.TimelineContext.Provider, { value: value, children: (0, jsx_runtime_1.jsx)(SequenceContext_js_1.SequenceContext.Provider, { value: null, children: children }) }));
+    }, [timelineContext, frameToFreeze, isActive, videoConfig.id]);
+    const sequenceValue = (0, react_1.useMemo)(() => {
+        if (isActive) {
+            return null;
+        }
+        return sequenceContext;
+    }, [isActive, sequenceContext]);
+    return ((0, jsx_runtime_1.jsx)(timeline_position_state_js_1.TimelineContext.Provider, { value: timelineValue, children: (0, jsx_runtime_1.jsx)(SequenceContext_js_1.SequenceContext.Provider, { value: sequenceValue, children: children }) }));
 };
 exports.Freeze = Freeze;
 
@@ -3975,8 +3995,12 @@ function interpolateFunction(input, inputRange, outputRange, options) {
         if (extrapolateLeft === 'clamp') {
             result = inputMin;
         }
+        else if (extrapolateLeft === 'wrap') {
+            const range = inputMax - inputMin;
+            result = ((((result - inputMin) % range) + range) % range) + inputMin;
+        }
         else if (extrapolateLeft === 'extend') {
-            // noop
+            // Noop
         }
     }
     if (result > inputMax) {
@@ -3986,8 +4010,12 @@ function interpolateFunction(input, inputRange, outputRange, options) {
         if (extrapolateRight === 'clamp') {
             result = inputMax;
         }
+        else if (extrapolateRight === 'wrap') {
+            const range = inputMax - inputMin;
+            result = ((((result - inputMin) % range) + range) % range) + inputMin;
+        }
         else if (extrapolateRight === 'extend') {
-            // noop
+            // Noop
         }
     }
     if (outputMin === outputMax) {
@@ -6454,7 +6482,7 @@ exports.validateSpringDuration = validateSpringDuration;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VERSION = void 0;
 // Automatically generated on publish
-exports.VERSION = '4.0.126';
+exports.VERSION = '4.0.128';
 
 
 /***/ }),
@@ -7276,10 +7304,12 @@ const toSeconds = (time, fps) => {
     return Math.round((time / fps) * 100) / 100;
 };
 const isIosSafari = () => {
-    return typeof window === 'undefined'
-        ? false
-        : /iP(ad|od|hone)/i.test(window.navigator.userAgent) &&
-            Boolean(navigator.userAgent.match(/Version\/[\d.]+.*Safari/));
+    if (typeof window === 'undefined') {
+        return false;
+    }
+    const isIpadIPodIPhone = /iP(ad|od|hone)/i.test(window.navigator.userAgent);
+    const isAppleWebKit = /AppleWebKit/.test(window.navigator.userAgent);
+    return isIpadIPodIPhone && isAppleWebKit;
 };
 exports.isIosSafari = isIosSafari;
 // https://github.com/remotion-dev/remotion/issues/1655
@@ -12756,7 +12786,9 @@ if (typeof window !== "undefined") {
     const compositions = getUnevaluatedComps();
     const selectedComp = compositions.find((c) => c.id === compId);
     if (!selectedComp) {
-      throw new Error(`Could not find composition with ID ${compId}`);
+      throw new Error(
+        `Could not find composition with ID ${compId}. Available compositions: ${compositions.map((c) => c.id).join(", ")}`
+      );
     }
     const abortController = new AbortController();
     const handle = (0,remotion__WEBPACK_IMPORTED_MODULE_2__.delayRender)(

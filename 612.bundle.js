@@ -2530,6 +2530,8 @@ const number_of_gif_loops_1 = __webpack_require__(89689);
 const offthreadvideo_cache_size_1 = __webpack_require__(17655);
 const overwrite_1 = __webpack_require__(96045);
 const prefer_lossless_1 = __webpack_require__(90353);
+const public_dir_1 = __webpack_require__(77340);
+const public_path_1 = __webpack_require__(38120);
 const repro_1 = __webpack_require__(77301);
 const scale_1 = __webpack_require__(66);
 const separate_audio_1 = __webpack_require__(35501);
@@ -2570,6 +2572,8 @@ exports.allOptions = {
     binariesDirectoryOption: binaries_directory_1.binariesDirectoryOption,
     forSeamlessAacConcatenationOption: for_seamless_aac_concatenation_1.forSeamlessAacConcatenationOption,
     separateAudioOption: separate_audio_1.separateAudioOption,
+    publicPathOption: public_path_1.publicPathOption,
+    publicDirOption: public_dir_1.publicDirOption,
 };
 
 
@@ -2886,7 +2890,6 @@ exports.optionsMap = {
         audioCodec: audio_codec_1.audioCodecOption,
     },
     stitchFramesToVideo: {
-        forSeamlessAacConcatenation: for_seamless_aac_concatenation_1.forSeamlessAacConcatenationOption,
         separateAudioTo: separate_audio_1.separateAudioOption,
     },
     renderStill: {
@@ -2909,6 +2912,7 @@ exports.optionsMap = {
         binariesDirectory: binaries_directory_1.binariesDirectoryOption,
     },
     renderFrames: {
+        forSeamlessAacConcatenation: for_seamless_aac_concatenation_1.forSeamlessAacConcatenationOption,
         offthreadVideoCacheSizeInBytes: offthreadvideo_cache_size_1.offthreadVideoCacheSizeInBytesOption,
         jpegQuality: jpeg_quality_1.jpegQualityOption,
         logLevel: log_level_1.logLevelOption,
@@ -3052,6 +3056,96 @@ exports.preferLosslessAudioOption = {
     setConfig: (val) => {
         input = val;
     },
+};
+
+
+/***/ }),
+
+/***/ 77340:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.publicDirOption = void 0;
+const jsx_runtime_1 = __webpack_require__(85893);
+const cliFlag = 'public-dir';
+let currentPublicDir = null;
+exports.publicDirOption = {
+    name: 'Public Directory',
+    cliFlag,
+    description: () => {
+        return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: ["Define the location of the", ' ', (0, jsx_runtime_1.jsx)("a", { href: "/docs/terminology/public-dir", children: (0, jsx_runtime_1.jsx)("code", { children: "public/ directory" }) }), ". If not defined, Remotion will assume the location is the `public` folder in your Remotion root."] }));
+    },
+    ssrName: 'publicDir',
+    docLink: 'https://www.remotion.dev/docs/terminology/public-dir',
+    getValue: ({ commandLine }) => {
+        if (commandLine[cliFlag] !== undefined) {
+            return {
+                source: 'cli',
+                value: commandLine[cliFlag],
+            };
+        }
+        if (currentPublicDir !== null) {
+            return {
+                source: 'config',
+                value: currentPublicDir,
+            };
+        }
+        return {
+            source: 'default',
+            value: null,
+        };
+    },
+    setConfig: (value) => {
+        currentPublicDir = value;
+    },
+    type: '',
+};
+
+
+/***/ }),
+
+/***/ 38120:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.publicPathOption = void 0;
+const jsx_runtime_1 = __webpack_require__(85893);
+const cliFlag = 'public-path';
+let currentPublicPath = null;
+exports.publicPathOption = {
+    name: 'Public Path',
+    cliFlag,
+    description: () => {
+        return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: ["The path of the URL where the bundle is going to be hosted. By default it is ", (0, jsx_runtime_1.jsx)("code", { children: "/" }), ", meaning that the bundle is going to be hosted at the root of the domain (e.g. ", (0, jsx_runtime_1.jsx)("code", { children: "https://localhost:3000/" }), "). If you are deploying to a subdirectory (e.g. ", (0, jsx_runtime_1.jsx)("code", { children: "/sites/my-site/" }), "), you should set this to the subdirectory."] }));
+    },
+    ssrName: 'publicPath',
+    docLink: 'https://www.remotion.dev/docs/renderer',
+    getValue: ({ commandLine }) => {
+        if (commandLine[cliFlag] !== undefined) {
+            return {
+                source: 'cli',
+                value: commandLine[cliFlag],
+            };
+        }
+        if (currentPublicPath !== null) {
+            return {
+                source: 'config',
+                value: currentPublicPath,
+            };
+        }
+        return {
+            source: 'default',
+            value: null,
+        };
+    },
+    setConfig: (value) => {
+        currentPublicPath = value;
+    },
+    type: '',
 };
 
 
@@ -4337,11 +4431,13 @@ const remotion_1 = __webpack_require__(27982);
 const no_react_1 = __webpack_require__(60808);
 const colors_1 = __webpack_require__(38746);
 const copy_text_1 = __webpack_require__(73760);
+const mobile_layout_1 = __webpack_require__(64486);
 const url_state_1 = __webpack_require__(59207);
 const use_asset_drag_events_1 = __importDefault(__webpack_require__(39188));
 const clipboard_1 = __webpack_require__(69618);
 const file_1 = __webpack_require__(3562);
 const folder_1 = __webpack_require__(48317);
+const sidebar_1 = __webpack_require__(2833);
 const InlineAction_1 = __webpack_require__(16971);
 const layout_1 = __webpack_require__(34153);
 const NotificationCenter_1 = __webpack_require__(9349);
@@ -4441,7 +4537,9 @@ const AssetFolderTree = ({ item, level, name, parentFolder, toggleFolder, tabInd
 };
 exports.AssetFolderTree = AssetFolderTree;
 const AssetSelectorItem = ({ item, tabIndex, level, parentFolder }) => {
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
     const [hovered, setHovered] = (0, react_1.useState)(false);
+    const { setSidebarCollapsedState } = (0, react_1.useContext)(sidebar_1.SidebarContext);
     const onPointerEnter = (0, react_1.useCallback)(() => {
         setHovered(true);
     }, []);
@@ -4462,6 +4560,9 @@ const AssetSelectorItem = ({ item, tabIndex, level, parentFolder }) => {
             : item.name;
         setCanvasContent({ type: 'asset', asset: relativePath });
         (0, url_state_1.pushUrl)(`/assets/${relativePath}`);
+        if (isMobileLayout) {
+            setSidebarCollapsedState({ left: 'collapsed', right: 'collapsed' });
+        }
     }, [item.name, parentFolder, setCanvasContent]);
     const style = (0, react_1.useMemo)(() => {
         return {
@@ -5478,6 +5579,7 @@ const jsx_runtime_1 = __webpack_require__(85893);
 const player_1 = __webpack_require__(11801);
 const react_1 = __webpack_require__(67294);
 const react_dom_1 = __importDefault(__webpack_require__(73935));
+const mobile_layout_1 = __webpack_require__(64486);
 const noop_1 = __webpack_require__(71206);
 const z_index_1 = __webpack_require__(19666);
 const portals_1 = __webpack_require__(90442);
@@ -5494,6 +5596,7 @@ const ContextMenu = ({ children, values }) => {
         triggerOnWindowResize: true,
         shouldApplyCssTransforms: true,
     });
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
     (0, react_1.useEffect)(() => {
         const { current } = ref;
         if (!current) {
@@ -5529,10 +5632,15 @@ const ContextMenu = ({ children, values }) => {
         if (!size) {
             return;
         }
-        const spaceToRight = size.windowSize.width - (opened.left + size.width);
-        const minSpaceToRightRequired = styles_1.MAX_MENU_WIDTH;
+        const spaceToRight = size.windowSize.width - size.left;
+        const spaceToLeft = size.left + size.width;
+        const minSpaceRequired = isMobileLayout
+            ? styles_1.MAX_MOBILE_MENU_WIDTH
+            : styles_1.MAX_MENU_WIDTH;
         const verticalLayout = spaceToTop > spaceToBottom ? 'bottom' : 'top';
-        const horizontalLayout = spaceToRight >= minSpaceToRightRequired ? 'left' : 'right';
+        const canOpenOnLeft = spaceToLeft >= minSpaceRequired;
+        const canOpenOnRight = spaceToRight >= minSpaceRequired;
+        const horizontalLayout = canOpenOnRight ? 'left' : 'right';
         return {
             ...styles_1.menuContainerTowardsTop,
             ...(verticalLayout === 'top'
@@ -5547,10 +5655,10 @@ const ContextMenu = ({ children, values }) => {
                     left: opened.left,
                 }
                 : {
-                    right: size.windowSize.width - opened.left,
+                    right: canOpenOnLeft ? size.windowSize.width - opened.left : 0,
                 }),
         };
-    }, [opened, spaceToBottom, spaceToTop, size]);
+    }, [opened.type, size, isMobileLayout, spaceToTop, spaceToBottom]);
     const onHide = (0, react_1.useCallback)(() => {
         setOpened({ type: 'not-open' });
     }, []);
@@ -6765,8 +6873,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.InitialCompositionLoader = exports.useSelectComposition = exports.useSelectAsset = void 0;
 const react_1 = __webpack_require__(67294);
 const remotion_1 = __webpack_require__(27982);
+const mobile_layout_1 = __webpack_require__(64486);
 const url_state_1 = __webpack_require__(59207);
 const folders_1 = __webpack_require__(37123);
+const sidebar_1 = __webpack_require__(2833);
 const CompositionSelector_1 = __webpack_require__(9674);
 const ExplorerPanel_1 = __webpack_require__(80100);
 const ZoomPersistor_1 = __webpack_require__(23408);
@@ -6796,6 +6906,8 @@ exports.useSelectAsset = useSelectAsset;
 const useSelectComposition = () => {
     const { setCompositionFoldersExpanded } = (0, react_1.useContext)(folders_1.FolderContext);
     const { setCanvasContent } = (0, react_1.useContext)(remotion_1.Internals.CompositionManager);
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
+    const { setSidebarCollapsedState } = (0, react_1.useContext)(sidebar_1.SidebarContext);
     return (c, push) => {
         var _a;
         if (push) {
@@ -6815,6 +6927,9 @@ const useSelectComposition = () => {
                 }
                 return newState;
             });
+            if (isMobileLayout) {
+                setSidebarCollapsedState({ left: 'collapsed', right: 'collapsed' });
+            }
         }
     };
 };
@@ -7449,11 +7564,12 @@ exports.getPortal = getPortal;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.inlineCodeSnippet = exports.outerPortal = exports.fullScreenOverlay = exports.menuContainerTowardsTop = exports.menuContainerTowardsBottom = exports.SHADOW_TOWARDS_TOP = exports.SHADOW_TOWARDS_BOTTOM = exports.MAX_MENU_WIDTH = exports.SUBMENU_LEFT_INSET = exports.MENU_VERTICAL_PADDING = void 0;
+exports.inlineCodeSnippet = exports.outerPortal = exports.fullScreenOverlay = exports.menuContainerTowardsTop = exports.menuContainerTowardsBottom = exports.SHADOW_TOWARDS_TOP = exports.SHADOW_TOWARDS_BOTTOM = exports.MAX_MOBILE_MENU_WIDTH = exports.MAX_MENU_WIDTH = exports.SUBMENU_LEFT_INSET = exports.MENU_VERTICAL_PADDING = void 0;
 const colors_1 = __webpack_require__(38746);
 exports.MENU_VERTICAL_PADDING = 4;
 exports.SUBMENU_LEFT_INSET = -8;
 exports.MAX_MENU_WIDTH = 400;
+exports.MAX_MOBILE_MENU_WIDTH = 300;
 const menuContainer = {
     backgroundColor: colors_1.BACKGROUND,
     position: 'fixed',
@@ -7642,6 +7758,50 @@ const MenuToolbar = ({ readOnlyStudio }) => {
                     }), readOnlyStudio ? null : (0, jsx_runtime_1.jsx)(UpdateCheck_1.UpdateCheck, {})] }), (0, jsx_runtime_1.jsx)("div", { style: flex }), (0, jsx_runtime_1.jsx)(MenuBuildIndicator_1.MenuBuildIndicator, {}), (0, jsx_runtime_1.jsx)("div", { style: flex }), (0, jsx_runtime_1.jsx)("div", { style: fixedWidthRight, children: (0, jsx_runtime_1.jsx)(SidebarCollapserControls_1.SidebarCollapserControls, {}) }), (0, jsx_runtime_1.jsx)(layout_1.Spacing, { x: 1 })] }));
 };
 exports.MenuToolbar = MenuToolbar;
+
+
+/***/ }),
+
+/***/ 31969:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const jsx_runtime_1 = __webpack_require__(85893);
+const react_dom_1 = __importDefault(__webpack_require__(73935));
+const colors_1 = __webpack_require__(38746);
+const z_index_1 = __webpack_require__(19666);
+const portals_1 = __webpack_require__(90442);
+const CancelButton_1 = __webpack_require__(11824);
+const container = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    padding: '0 0px 50px 0px',
+    background: colors_1.BACKGROUND,
+};
+const buttonContainer = {
+    height: '40px',
+    width: '100%',
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'flex-end',
+};
+const button = {
+    height: 20,
+    width: 20,
+};
+function MobilePanel({ children, onClose, }) {
+    const { currentZIndex } = (0, z_index_1.useZIndex)();
+    return react_dom_1.default.createPortal((0, jsx_runtime_1.jsxs)("div", { style: container, children: [(0, jsx_runtime_1.jsx)("div", { style: buttonContainer, children: (0, jsx_runtime_1.jsx)(CancelButton_1.CancelButton, { style: button, onPress: onClose }) }), children] }), (0, portals_1.getPortal)(currentZIndex));
+}
+exports["default"] = MobilePanel;
 
 
 /***/ }),
@@ -7855,6 +8015,7 @@ const player_1 = __webpack_require__(11801);
 const react_1 = __webpack_require__(67294);
 const react_dom_1 = __importDefault(__webpack_require__(73935));
 const colors_1 = __webpack_require__(38746);
+const mobile_layout_1 = __webpack_require__(64486);
 const noop_1 = __webpack_require__(71206);
 const caret_1 = __webpack_require__(74655);
 const z_index_1 = __webpack_require__(19666);
@@ -7954,14 +8115,20 @@ const Combobox = ({ values, selectedId, style: customStyle, title }) => {
     const derivedMaxHeight = (0, react_1.useMemo)(() => {
         return spaceToTop > spaceToBottom ? spaceToTop : spaceToBottom;
     }, [spaceToBottom, spaceToTop]);
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
     const portalStyle = (0, react_1.useMemo)(() => {
         if (!opened || !size) {
             return null;
         }
-        const spaceToRight = size.windowSize.width - (size.left + size.width);
-        const minSpaceToRightRequired = styles_1.MAX_MENU_WIDTH;
+        const spaceToRight = size.windowSize.width - size.left;
+        const spaceToLeft = size.left + size.width;
+        const minSpaceRequired = isMobileLayout
+            ? styles_1.MAX_MOBILE_MENU_WIDTH
+            : styles_1.MAX_MENU_WIDTH;
         const verticalLayout = spaceToTop > spaceToBottom ? 'bottom' : 'top';
-        const horizontalLayout = spaceToRight >= minSpaceToRightRequired ? 'left' : 'right';
+        const canOpenOnLeft = spaceToLeft >= minSpaceRequired;
+        const canOpenOnRight = spaceToRight >= minSpaceRequired;
+        const horizontalLayout = canOpenOnRight ? 'left' : 'right';
         return {
             ...(verticalLayout === 'top'
                 ? {
@@ -7976,11 +8143,13 @@ const Combobox = ({ values, selectedId, style: customStyle, title }) => {
                 ? {
                     left: size.left,
                 }
-                : {
-                    right: size.windowSize.width - size.left - size.width,
-                }),
+                : canOpenOnLeft
+                    ? {
+                        right: size.windowSize.width - size.left - size.width,
+                    }
+                    : { left: 0 }),
         };
-    }, [opened, size, spaceToBottom, spaceToTop]);
+    }, [isMobileLayout, opened, size, spaceToBottom, spaceToTop]);
     const selected = values.find((v) => v.id === selectedId);
     const style = (0, react_1.useMemo)(() => {
         return {
@@ -8208,6 +8377,7 @@ exports.MenuContent = void 0;
 const jsx_runtime_1 = __webpack_require__(85893);
 const react_1 = __webpack_require__(67294);
 const colors_1 = __webpack_require__(38746);
+const mobile_layout_1 = __webpack_require__(64486);
 const use_keybinding_1 = __webpack_require__(67442);
 const is_menu_item_1 = __webpack_require__(98185);
 const MenuDivider_1 = __webpack_require__(8912);
@@ -8227,6 +8397,7 @@ const container = {
 const MenuContent = ({ onHide, values, preselectIndex, onNextMenu, onPreviousMenu, leaveLeftSpace, topItemCanBeUnselected, fixedHeight, }) => {
     const keybindings = (0, use_keybinding_1.useKeybinding)();
     const containerRef = (0, react_1.useRef)(null);
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
     const [subMenuActivated, setSubMenuActivated] = (0, react_1.useState)(false);
     if (values[0].type === 'divider') {
         throw new Error('first value cant be divide');
@@ -8311,14 +8482,18 @@ const MenuContent = ({ onHide, values, preselectIndex, onNextMenu, onPreviousMen
         setSubMenuActivated('without-mouse');
     }, [onNextMenu, selectedItem, values]);
     const containerWithHeight = (0, react_1.useMemo)(() => {
+        const containerStyles = { ...container };
         if (fixedHeight === null) {
-            return { ...container, maxHeight: 600 };
+            containerStyles.maxHeight = 600;
         }
-        return {
-            ...container,
-            maxHeight: fixedHeight,
-        };
-    }, [fixedHeight]);
+        else {
+            containerStyles.maxHeight = fixedHeight;
+        }
+        if (isMobileLayout) {
+            containerStyles.maxWidth = styles_1.MAX_MOBILE_MENU_WIDTH;
+        }
+        return containerStyles;
+    }, [fixedHeight, isMobileLayout]);
     (0, react_1.useEffect)(() => {
         const escapeBinding = keybindings.registerKeybinding({
             event: 'keydown',
@@ -9453,18 +9628,12 @@ const react_1 = __webpack_require__(67294);
 const remotion_1 = __webpack_require__(27982);
 const ShortcutHint_1 = __webpack_require__(81994);
 const colors_1 = __webpack_require__(38746);
+const mobile_layout_1 = __webpack_require__(64486);
 const DataEditor_1 = __webpack_require__(72185);
 const deep_equal_1 = __webpack_require__(24592);
 const RenderQueue_1 = __webpack_require__(11753);
 const RendersTab_1 = __webpack_require__(81734);
 const Tabs_1 = __webpack_require__(27654);
-const container = {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-};
 const circle = {
     width: 8,
     height: 8,
@@ -9492,6 +9661,15 @@ exports.optionsSidebarTabs = (0, react_1.createRef)();
 const OptionsPanel = ({ readOnlyStudio }) => {
     const { props, updateProps } = (0, react_1.useContext)(remotion_1.Internals.EditorPropsContext);
     const [saving, setSaving] = (0, react_1.useState)(false);
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
+    const container = (0, react_1.useMemo)(() => ({
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        position: isMobileLayout ? 'relative' : 'absolute',
+        flexDirection: 'column',
+        flex: 1,
+    }), [isMobileLayout]);
     const [panel, setPanel] = (0, react_1.useState)(() => getSelectedPanel(readOnlyStudio));
     const onPropsSelected = (0, react_1.useCallback)(() => {
         setPanel('input-props');
@@ -16822,15 +17000,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RenderQueueRepeatItem = void 0;
 const jsx_runtime_1 = __webpack_require__(85893);
 const react_1 = __webpack_require__(67294);
+const mobile_layout_1 = __webpack_require__(64486);
 const retry_payload_1 = __webpack_require__(86524);
 const modals_1 = __webpack_require__(89750);
+const sidebar_1 = __webpack_require__(2833);
 const InlineAction_1 = __webpack_require__(16971);
 const RenderQueueRepeatItem = ({ job }) => {
     const { setSelectedModal } = (0, react_1.useContext)(modals_1.ModalsContext);
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
+    const { setSidebarCollapsedState } = (0, react_1.useContext)(sidebar_1.SidebarContext);
     const onClick = (0, react_1.useCallback)((e) => {
         e.stopPropagation();
         const retryPayload = (0, retry_payload_1.makeRetryPayload)(job);
         setSelectedModal(retryPayload);
+        if (isMobileLayout) {
+            setSidebarCollapsedState({ left: 'collapsed', right: 'collapsed' });
+        }
     }, [job, setSelectedModal]);
     const icon = (0, react_1.useMemo)(() => {
         return {
@@ -17686,11 +17871,15 @@ const jsx_runtime_1 = __webpack_require__(85893);
 const react_1 = __webpack_require__(67294);
 const remotion_1 = __webpack_require__(27982);
 const client_id_1 = __webpack_require__(82862);
+const mobile_layout_1 = __webpack_require__(64486);
 const render_1 = __webpack_require__(97932);
 const modals_1 = __webpack_require__(89750);
+const sidebar_1 = __webpack_require__(2833);
 const InlineAction_1 = __webpack_require__(16971);
 const SidebarRenderButton = ({ composition, visible }) => {
     const { setSelectedModal } = (0, react_1.useContext)(modals_1.ModalsContext);
+    const { setSidebarCollapsedState } = (0, react_1.useContext)(sidebar_1.SidebarContext);
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
     const iconStyle = (0, react_1.useMemo)(() => {
         return {
             style: {
@@ -17750,6 +17939,9 @@ const SidebarRenderButton = ({ composition, visible }) => {
             initialRepro: defaults.repro,
             initialForSeamlessAacConcatenation: defaults.forSeamlessAacConcatenation,
         });
+        if (isMobileLayout) {
+            setSidebarCollapsedState({ left: 'collapsed', right: 'collapsed' });
+        }
     }, [composition.defaultProps, composition.id, props, setSelectedModal]);
     const renderAction = (0, react_1.useCallback)((color) => {
         return (0, jsx_runtime_1.jsx)(render_1.ThinRenderIcon, { fill: color, svgProps: iconStyle });
@@ -20970,14 +21162,18 @@ exports.TimelineInOutPointToggle = TimelineInOutPointToggle;
 /***/ }),
 
 /***/ 63960:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopPanel = exports.useResponsiveSidebarStatus = void 0;
 const jsx_runtime_1 = __webpack_require__(85893);
 const react_1 = __webpack_require__(67294);
+const mobile_layout_1 = __webpack_require__(64486);
 const use_breakpoint_1 = __webpack_require__(9590);
 const editor_rulers_1 = __webpack_require__(3854);
 const sidebar_1 = __webpack_require__(2833);
@@ -20985,6 +21181,7 @@ const CanvasOrLoading_1 = __webpack_require__(34112);
 const CurrentCompositionSideEffects_1 = __webpack_require__(72891);
 const use_is_ruler_visible_1 = __webpack_require__(25404);
 const ExplorerPanel_1 = __webpack_require__(80100);
+const MobilePanel_1 = __importDefault(__webpack_require__(31969));
 const OptionsPanel_1 = __webpack_require__(88204);
 const PreviewToolbar_1 = __webpack_require__(64063);
 const SplitterContainer_1 = __webpack_require__(70980);
@@ -21044,7 +21241,8 @@ const TopPanel = ({ readOnlyStudio, onMounted, size, drawRef, bufferStateDelayIn
     const onCollapseRight = (0, react_1.useCallback)(() => {
         setSidebarCollapsedState({ left: null, right: 'collapsed' });
     }, [setSidebarCollapsedState]);
-    return ((0, jsx_runtime_1.jsxs)("div", { style: container, children: [(0, jsx_runtime_1.jsx)("div", { style: row, children: (0, jsx_runtime_1.jsxs)(SplitterContainer_1.SplitterContainer, { minFlex: 0.15, maxFlex: 0.4, defaultFlex: 0.2, id: "sidebar-to-preview", orientation: "vertical", children: [actualStateLeft === 'expanded' ? ((0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "flexer", children: (0, jsx_runtime_1.jsx)(ExplorerPanel_1.ExplorerPanel, { readOnlyStudio: readOnlyStudio }) })) : null, actualStateLeft === 'expanded' ? ((0, jsx_runtime_1.jsx)(SplitterHandle_1.SplitterHandle, { allowToCollapse: "left", onCollapse: onCollapseLeft })) : null, (0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "anti-flexer", children: (0, jsx_runtime_1.jsxs)(SplitterContainer_1.SplitterContainer, { minFlex: 0.5, maxFlex: 0.8, defaultFlex: 0.7, id: "canvas-to-right-sidebar", orientation: "vertical", children: [(0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "flexer", children: (0, jsx_runtime_1.jsx)("div", { ref: drawRef, style: canvasContainerStyle, children: size ? (0, jsx_runtime_1.jsx)(CanvasOrLoading_1.CanvasOrLoading, { size: size }) : null }) }), actualStateRight === 'expanded' ? ((0, jsx_runtime_1.jsx)(SplitterHandle_1.SplitterHandle, { allowToCollapse: "right", onCollapse: onCollapseRight })) : null, actualStateRight === 'expanded' ? ((0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "anti-flexer", children: (0, jsx_runtime_1.jsx)(OptionsPanel_1.OptionsPanel, { readOnlyStudio: readOnlyStudio }) })) : null] }) })] }) }), (0, jsx_runtime_1.jsx)(PreviewToolbar_1.PreviewToolbar, { bufferStateDelayInMilliseconds: bufferStateDelayInMilliseconds, readOnlyStudio: readOnlyStudio }), (0, jsx_runtime_1.jsx)(CurrentCompositionSideEffects_1.CurrentCompositionKeybindings, { readOnlyStudio: readOnlyStudio }), (0, jsx_runtime_1.jsx)(CurrentCompositionSideEffects_1.TitleUpdater, {})] }));
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
+    return ((0, jsx_runtime_1.jsxs)("div", { style: container, children: [(0, jsx_runtime_1.jsx)("div", { style: row, children: (0, jsx_runtime_1.jsxs)(SplitterContainer_1.SplitterContainer, { minFlex: 0.15, maxFlex: 0.4, defaultFlex: 0.2, id: "sidebar-to-preview", orientation: "vertical", children: [actualStateLeft === 'expanded' ? (isMobileLayout ? ((0, jsx_runtime_1.jsx)(MobilePanel_1.default, { onClose: onCollapseLeft, children: (0, jsx_runtime_1.jsx)(ExplorerPanel_1.ExplorerPanel, { readOnlyStudio: readOnlyStudio }) })) : ((0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "flexer", children: (0, jsx_runtime_1.jsx)(ExplorerPanel_1.ExplorerPanel, { readOnlyStudio: readOnlyStudio }) }))) : null, actualStateLeft === 'expanded' ? ((0, jsx_runtime_1.jsx)(SplitterHandle_1.SplitterHandle, { allowToCollapse: "left", onCollapse: onCollapseLeft })) : null, (0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "anti-flexer", children: (0, jsx_runtime_1.jsxs)(SplitterContainer_1.SplitterContainer, { minFlex: 0.5, maxFlex: 0.8, defaultFlex: 0.7, id: "canvas-to-right-sidebar", orientation: "vertical", children: [(0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "flexer", children: (0, jsx_runtime_1.jsx)("div", { ref: drawRef, style: canvasContainerStyle, children: size ? (0, jsx_runtime_1.jsx)(CanvasOrLoading_1.CanvasOrLoading, { size: size }) : null }) }), actualStateRight === 'expanded' ? ((0, jsx_runtime_1.jsx)(SplitterHandle_1.SplitterHandle, { allowToCollapse: "right", onCollapse: onCollapseRight })) : null, actualStateRight === 'expanded' ? (isMobileLayout ? ((0, jsx_runtime_1.jsx)(MobilePanel_1.default, { onClose: onCollapseRight, children: (0, jsx_runtime_1.jsx)(OptionsPanel_1.OptionsPanel, { readOnlyStudio: readOnlyStudio }) })) : ((0, jsx_runtime_1.jsx)(SplitterElement_1.SplitterElement, { sticky: null, type: "anti-flexer", children: (0, jsx_runtime_1.jsx)(OptionsPanel_1.OptionsPanel, { readOnlyStudio: readOnlyStudio }) }))) : null] }) })] }) }), (0, jsx_runtime_1.jsx)(PreviewToolbar_1.PreviewToolbar, { bufferStateDelayInMilliseconds: bufferStateDelayInMilliseconds, readOnlyStudio: readOnlyStudio }), (0, jsx_runtime_1.jsx)(CurrentCompositionSideEffects_1.CurrentCompositionKeybindings, { readOnlyStudio: readOnlyStudio }), (0, jsx_runtime_1.jsx)(CurrentCompositionSideEffects_1.TitleUpdater, {})] }));
 };
 exports.TopPanel = TopPanel;
 
@@ -27214,14 +27412,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SidebarContextProvider = exports.SidebarContext = void 0;
 const jsx_runtime_1 = __webpack_require__(85893);
 const react_1 = __webpack_require__(67294);
+const mobile_layout_1 = __webpack_require__(64486);
 const storageKey = (sidebar) => {
     if (sidebar === 'right') {
         return 'remotion.sidebarRightCollapsing';
     }
     return 'remotion.sidebarCollapsing';
 };
-const getSavedCollapsedStateLeft = () => {
+const getSavedCollapsedStateLeft = (isMobileLayout = false) => {
     const state = window.localStorage.getItem(storageKey('left'));
+    if (isMobileLayout) {
+        return 'collapsed';
+    }
     if (state === 'collapsed') {
         return 'collapsed';
     }
@@ -27230,8 +27432,11 @@ const getSavedCollapsedStateLeft = () => {
     }
     return 'responsive';
 };
-const getSavedCollapsedStateRight = () => {
+const getSavedCollapsedStateRight = (isMobileLayout = false) => {
     const state = window.localStorage.getItem(storageKey('right'));
+    if (isMobileLayout) {
+        return 'collapsed';
+    }
     if (state === 'expanded') {
         return 'expanded';
     }
@@ -27248,9 +27453,10 @@ exports.SidebarContext = (0, react_1.createContext)({
     sidebarCollapsedStateRight: 'collapsed',
 });
 const SidebarContextProvider = ({ children }) => {
+    const isMobileLayout = (0, mobile_layout_1.useMobileLayout)();
     const [sidebarCollapsedState, setSidebarCollapsedState] = (0, react_1.useState)(() => ({
-        left: getSavedCollapsedStateLeft(),
-        right: getSavedCollapsedStateRight(),
+        left: getSavedCollapsedStateLeft(isMobileLayout),
+        right: getSavedCollapsedStateRight(isMobileLayout),
     }));
     const value = (0, react_1.useMemo)(() => {
         return {
